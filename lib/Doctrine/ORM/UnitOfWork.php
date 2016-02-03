@@ -425,6 +425,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForSynchronization =
         $this->orphanRemovals = [];
+
+        $this->dispatchAfterFlush();
     }
 
     /**
@@ -3305,6 +3307,13 @@ class UnitOfWork implements PropertyChangedListener
     {
         if ($this->evm->hasListeners(Events::postFlush)) {
             $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
+        }
+    }
+
+    private function dispatchAfterFlush()
+    {
+        if($this->evm->hasListeners(Events::afterFlush)) {
+            $this->evm->dispatchEvent(Events::afterFlush);
         }
     }
 
